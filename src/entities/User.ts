@@ -1,6 +1,13 @@
 import { IsEmail, Length } from "class-validator";
-import { Entity, Column, Index, BeforeInsert, OneToMany } from "typeorm";
+import {
+  Entity,
+  Column,
+  Index,
+  BeforeInsert,
+  OneToMany,
+} from "typeorm";
 
+//@ts-ignore
 import bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 import RootEntity from "./RootEntity";
