@@ -1,11 +1,5 @@
 import { IsEmail, Length } from "class-validator";
-import {
-  Entity,
-  Column,
-  Index,
-  BeforeInsert,
-  OneToMany,
-} from "typeorm";
+import { Entity, Column, Index, BeforeInsert, OneToMany } from "typeorm";
 
 //@ts-ignore
 import bcrypt from "bcrypt";
@@ -13,6 +7,7 @@ import { Exclude } from "class-transformer";
 import RootEntity from "./RootEntity";
 
 import Post from "./Post";
+import Vote from "./Vote";
 
 @Entity("users")
 export default class User extends RootEntity {
@@ -26,22 +21,26 @@ export default class User extends RootEntity {
   }
 
   @Index()
-  @Length(3, 255, { message: "Username should be at least 3 characters long" })
+  @IsEmail(undefined, { message: "Must be an email" })
+  @Length(1, 255, { message: "Email is empty" })
+  @Column({ unique: true })
+  email: string;
+
+  @Index()
+  @Length(3, 255, { message: "Must  be at least 3 characters long" })
   @Column({ unique: true })
   username: string;
 
-  @Length(6)
+  @Length(6, 255, { message: "Must be at least 6 characters long" })
   @Exclude()
   @Column()
   password: string;
 
-  @Index()
-  @IsEmail()
-  @Column({ unique: true })
-  email: string;
-
   @OneToMany(() => Post, post => post.user)
   posts: Post[];
+
+  @OneToMany(() => Vote, vote => vote.user)
+  votes: Vote[];
 
   @BeforeInsert()
   async hashPassword() {

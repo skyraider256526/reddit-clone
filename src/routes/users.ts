@@ -7,6 +7,13 @@ import cookie from "cookie";
 import User from "../entities/User";
 import { auth } from "../middlewares";
 
+const mapErrors = (errors: Object[]) => {
+  return errors.reduce((prev: any, err: any) => {
+    prev[err.property] = Object.entries(err.constraints)[0][1];
+    return prev;
+  }, {});
+};
+
 const register = async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
 
@@ -26,7 +33,7 @@ const register = async (req: Request, res: Response) => {
 
       errors = await validate(user);
       if (errors.length > 0) {
-        return res.status(400).json({ errors });
+        return res.status(400).json(mapErrors(errors));
       }
 
       await user.save();
@@ -52,7 +59,7 @@ const login = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ username });
 
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ username: "User not found" });
 
     const passwordMatches = await bcrypt.compare(password, user.password);
 
